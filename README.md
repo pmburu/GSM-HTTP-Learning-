@@ -17,7 +17,7 @@ $ docker run \
 ```
 
 This assumes the following:
-- A modem device is connected to /dev/ttyACM0.
+- A modem devices are connected to /dev/ttyACM*.
 
 Let's view all the available modems.
 
