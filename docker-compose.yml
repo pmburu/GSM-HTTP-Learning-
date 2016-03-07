@@ -1,0 +1,12 @@
+app:
+  build: ./src
+  volumes:
+    - ./src:/opt/app
+  devices:
+    - /dev/ttyACM0:/dev/ttyACM0
+  environment:
+    - PYTHONUNBUFFERED=1
+  ports:
+    - 3000:80
+  working_dir: /opt/app
+  command: gunicorn server:app -b 0.0.0.0:80 --reload --access-logfile - --error-logfile - --timeout 120
