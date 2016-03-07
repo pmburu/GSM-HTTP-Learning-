@@ -33,11 +33,15 @@ from flask import Flask, jsonify, abort, request
 app = Flask(__name__)
 
 
-@app.route('/modems/<number>/prep_bal')
-def api_number_bal(number):
+def port_or_404(number):
     port = numbers.get(number, None)
     if not port:
-        abort(404)
+        return abort(404)
+
+
+@app.route('/modems/<number>/prep_bal')
+def api_number_bal(number):
+    port = port_or_404(number)
     return jsonify({'balance': 0})
 
 
@@ -53,9 +57,7 @@ def api_unused_ports():
 
 @app.route('/modems/<number>/call', methods=['POST'])
 def api_call(number):
-    port = numbers.get(number, None)
-    if not port:
-        return abort(404)
+    port = port_or_404(number)
 
     dest_number = request.form['number']
     duration = int(request.form.get('duration', 0))
@@ -67,9 +69,7 @@ def api_call(number):
 
 @app.route('/modems/<number>/wait_for_call', methods=['POST'])
 def api_wait_for_call(number):
-    port = numbers.get(number, None)
-    if not port:
-        return abort(404)
+    port = port_or_404(number)
 
     duration = int(request.form.get('duration', 0))
 
@@ -80,9 +80,7 @@ def api_wait_for_call(number):
 
 @app.route('/modems/<number>/send_sms', methods=['POST'])
 def api_send_sms(number):
-    port = numbers.get(number, None)
-    if not port:
-        return abort(404)
+    port = port_or_404(number)
 
     recipient = request.form['number']
     message = request.form['message']
@@ -94,9 +92,7 @@ def api_send_sms(number):
 
 @app.route('/modems/<number>/inbox')
 def api_inbox(number):
-    port = numbers.get(number, None)
-    if not port:
-        return abort(404)
+    port = port_or_404(number)
     
     return jsonify({
         'messages': serial_gsm.inbox_messages(ser)
@@ -105,9 +101,7 @@ def api_inbox(number):
 
 @app.route('/modems/<number>/inbox', methods=['DELETE'])
 def api_clear_inbox(number):
-    port = numbers.get(number, None)
-    if not port:
-        return abort(404)
+    port = port_or_404(number)
 
     ser = Serial(port)
     return jsonify(serial_gsm.delete_inbox_messages(ser))
@@ -115,9 +109,7 @@ def api_clear_inbox(number):
 
 @app.route('/modems/<number>/ussd', methods=['POST'])
 def api_send_ussd(number):
-    port = numbers.get(number, None)
-    if not port:
-        return abort(404)
+    port = port_or_404(number)
 
     command = request.form['command']
     timeout = int(request.form.get('timeout', 0))
