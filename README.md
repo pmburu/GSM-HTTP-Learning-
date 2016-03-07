@@ -41,7 +41,7 @@ Adding Modems/Modem Detection
 ---
 
 Once you have the devices connected to your server, run the container with the
-devices mounted. gsm-api assumes that the devices are mounted as /dev/ttyACM*.
+devices mounted. gsm-api assumes that the devices are mounted as `/dev/ttyACM*`.
 
 ```sh
 $ docker run \
