@@ -49,3 +49,60 @@ $ docker run \
   --device /dev/AnotherModem0:/dev/ttyACM1 \
   hub.infoshift.co/gsm-api
 ```
+
+HTTP API
+---
+
+The HTTP API returns JSON responses and usually expects `form-urlencoded` as
+POST data.
+
+Example:
+
+```sh
+$ curl -XPOST 'http://localhost:3000/an/api/endpoint' -d 'a=1&b=2' -F 'c=3'
+```
+
+### Initiating a Call
+
+Example Request:
+
+```sh
+$ curl -XPOST 'http://localhost:3000/modems/<modem_number>/call' -F 'number=09xxxxxxxxx' -F 'duration=0'
+```
+
+Example Response
+
+```
+{
+  "connected": true, 
+  "duration": 5
+}
+```
+
+Request Parameters:
+- modem_number: The number of the modem we'll use to initiate the call.
+- number: A 10-digit msisdn that we'll call.
+- duration: How long a call should last.
+
+Response Parameters:
+- connected: Boolean. Tells whether the call has been successfully connected.
+- duration: Number. How long the call actually lasted.
+
+#### Notes:
+- If `duration` is set to 0, and once the call is connected, the call lasts
+indefinitely until the call is terminated by either the receiver or the network.
+- If `duration` is set to 1 or so, and once the call is connected, the call
+is terminated once the set `duration` is reached or the call is terminated by
+either the receiver or the network.
+
+### Receiving a Call
+
+TODO
+
+### Sending an SMS
+
+TODO
+
+### Sending a USSD Command
+
+TODO
