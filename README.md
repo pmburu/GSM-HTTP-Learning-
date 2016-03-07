@@ -176,3 +176,11 @@ Request Parameters:
 Response Parameters:
 - success: Boolean. Tells whether the USSD command was successful.
 - message: String. The final message the modem receives.
+
+### Reading the Modem Inbox
+
+TODO
+
+### Clearing the Modem Inbox
+
+TODO
