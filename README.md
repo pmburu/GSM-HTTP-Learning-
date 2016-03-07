@@ -179,8 +179,53 @@ Response Parameters:
 
 ### Reading the Modem Inbox
 
-TODO
+Example Request
+```sh
+$ curl -XGET 'http://localhost:3000/modems/$MODEM_NUMBER/inbox'
+```
+
+Example Response
+```
+{
+  "messages": [
+        "date": "16/03/08",
+        "index": 1,
+        "message": "Hello world",
+        "origin": "+6391755952xx",
+        "status": "REC READ",
+        "time": "06:28:00"
+  ]
+}
+```
+
+Request Parameters:
+- modem_number: The number of the modem we'll use to initiate the call.
+
+Response Parameters:
+- messages[]: A list of messages.
+- message[date]: String. A date string formatted as 'YY/MM/DD'
+- message[index]: Number. Message position in the inbox.
+- message[message]: String. The message sent.
+- message[origin]: String (MSISDN). Where the message came from.
+- message[status]: String. The status of the message (eg. REC READ means the message has been opened)
+- message[time]: String. A time string formatted as 'HH:MM:SS'
 
 ### Clearing the Modem Inbox
 
-TODO
+Example Request
+```sh
+$ curl -XDELETE 'http://localhost:3000/modems/$MODEM_NUMBER/inbox'
+```
+
+Example Response:
+```json
+{
+  "success": true
+}
+```
+
+Request Parameters:
+- modem_number: The number of the modem we'll use to initiate the call.
+
+Response Parameters:
+- success: Boolean. Tells whether the USSD command was successful.
