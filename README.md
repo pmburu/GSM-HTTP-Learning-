@@ -12,8 +12,8 @@ We can run gsm-api by running the command below.
 $ docker pull hub.infoshift.co/gsm-api
 $ docker run \
   -p 3000:80 \
-  -d /dev/ttyACM0:/dev/ttyACM0 \ 
-  hub.infoshift.co/gsm-serial \
+  $(for i in /dev/ttyACM*; do echo --device $i:$i; done) \  # Mount all /dev/ttyACM*
+  hub.infoshift.co/gsm-api \
 ```
 
 This assumes the following:
@@ -36,3 +36,16 @@ $ curl -XPOST "http://localhost:3000/modems/$(echo $MODEM_NUMS | jq -r .[0])/sen
 ```
 
 You should receive a `$MESSAGE` from this modem to your number (`$RECIPIENT`).
+
+Adding Modems/Modem Detection
+---
+
+Once you have the devices connected to your server, run the container with the
+devices mounted. gsm-api assumes that the devices are mounted as /dev/ttyACM*.
+
+```sh
+$ docker run \
+  --device /dev/MyModem0:/dev/ttyACM0 \
+  --device /dev/AnotherModem0:/dev/ttyACM1 \
+  hub.infoshift.co/gsm-api
+```
