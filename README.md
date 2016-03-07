@@ -112,6 +112,7 @@ Example Response:
 ```
 
 Request Parameters:
+- modem_number: The number of the modem we'll use to initiate the call.
 - duration: How long a call should last.
 
 Response Parameters:
@@ -129,7 +130,28 @@ either the receiver or the network.
 
 ### Sending an SMS
 
-TODO
+Example Request
+
+```sh
+$ curl -XPOST 'http://localhost:3000/modems/$MODEM_NUMBER/send_sms' -F 'number=09xxxxxxxxx' -F 'message=my message'
+```
+
+Example Response
+
+```json
+{
+  "success": true, 
+}
+```
+
+Request Parameters:
+- modem_number: The number of the modem we'll use to initiate the call.
+- message: The message to be sent.
+- number: A 10-digit msisdn that we'll call.
+
+Response Parameters:
+- success: Boolean. Tells whether the message has been successfully sent or not.
+
 
 ### Sending a USSD Command
 
