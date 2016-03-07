@@ -155,4 +155,24 @@ Response Parameters:
 
 ### Sending a USSD Command
 
-TODO
+Example Request
+```sh
+$ curl -XPOST 'http://localhost:3000/modems/$MODEM_NUMBER/ussd' -F 'command=*143#' -F 'timeout=0'
+```
+
+Example Response
+```
+{
+  "success": true,
+  "message": "Hello World"
+}
+```
+
+Request Parameters:
+- modem_number: The number of the modem we'll use to initiate the call.
+- command: A USSD command set. Usually starts with `*` and ends with `#`.
+- timeout: Duration we wait until we consider the USSD request failed.
+
+Response Parameters:
+- success: Boolean. Tells whether the USSD command was successful.
+- message: String. The final message the modem receives.
