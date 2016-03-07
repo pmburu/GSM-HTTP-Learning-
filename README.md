@@ -9,7 +9,6 @@ Quickstart
 We can run gsm-api by running the command below.
 
 ```sh
-$ docker pull hub.infoshift.co/gsm-api
 $ docker run \
   -p 3000:80 \
   $(for i in /dev/ttyACM*; do echo --device $i:$i; done) \  # Mount all /dev/ttyACM*
