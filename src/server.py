@@ -125,7 +125,3 @@ def api_send_ussd(number):
     ser = Serial(port)
     res = serial_gsm.ussd_send(ser, command, timeout=timeout)
     return jsonify(res)
-
-
-from werkzeug.debug import DebuggedApplication
-app = DebuggedApplication(app, evalex=True)
