@@ -19,7 +19,10 @@ numbers = {}
 
 # Parse numbers.
 for port in ports.keys():
-    ser = Serial(port)
+    try:
+        ser = Serial(port)
+    except:
+        continue
     number = serial_gsm.sim_msisdn(ser)
     if number:
         ports[port] = number
