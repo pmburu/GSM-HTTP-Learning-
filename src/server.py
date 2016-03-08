@@ -20,10 +20,10 @@ numbers = {}
 # Parse numbers.
 for port in ports.keys():
     try:
-        ser = Serial(port)
+        _ser = Serial(port)
     except:
         continue
-    number = serial_gsm.sim_msisdn(ser)
+    number = serial_gsm.sim_msisdn(_ser)
     if number:
         ports[port] = number
         numbers[number] = port
@@ -120,3 +120,10 @@ def api_send_ussd(number):
     ser = Serial(port)
     res = serial_gsm.ussd_send(ser, command, timeout=timeout)
     return jsonify(res)
+
+
+if __name__ == '__main__':
+    app.run(
+        host='0.0.0.0',
+        port=3000,
+    )
