@@ -121,7 +121,8 @@ def api_send_ussd(number):
 
 
 if __name__ == '__main__':
-    app.run(
-        host='0.0.0.0',
-        port=3000,
-    )
+    from werkzeug.debug import DebuggedApplication
+    app.debug = True
+    app = DebuggedApplication(evalex=True)
+    from gevent.wsgi import WSGIServer
+    WSGIServer(('0.0.0.0', 3000), app).serve_forever()
