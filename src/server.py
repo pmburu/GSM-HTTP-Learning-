@@ -43,12 +43,14 @@ def ser_or_404(number):
     ser = serials.get(number, None)
     if not ser:
         return abort(404)
+    return ser
 
 
 def port_or_404(number):
     port = numbers.get(number, None)
     if not port:
         return abort(404)
+    return port
 
 
 @app.route('/modems/<number>/prep_bal')
