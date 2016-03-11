@@ -111,6 +111,14 @@ def api_clear_inbox(number):
     return jsonify(serial_gsm.delete_inbox_messages(ser))
 
 
+@app.route('/modems/<number>/wait_for_sms')
+def api_wait_for_sms(number):
+    origin = request.args['origin']
+    timeout = int(request.args.get('timeout', 0))
+    res = serial_gsm.wait_for_sms(ser, origin, timeout)
+    return jsonify(res)
+
+
 @app.route('/modems/<number>/ussd', methods=['POST'])
 def api_send_ussd(number):
     ser = ser_or_404(number)

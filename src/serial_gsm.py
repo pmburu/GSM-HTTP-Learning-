@@ -183,6 +183,20 @@ def inbox_messages(ser):
     return _parse_cmgl(res)
 
 
+def wait_for_sms(ser, origin, timeout=0):
+    """Waits for a message from a specific origin."""
+    started = int(time.time())
+    while True:
+        messages = inbox_messages(ser)
+        for m in messages:
+            if origin.lower() in m['origin'].lower():
+                return {'message': m, 'error': None}
+        if timeout:
+            elapsed = int(time.time()) - started
+            if elapsed > timeout:
+                return {'message': None, 'error': 'Wait for SMS timeout'}
+
+
 def sim_msisdn(ser):
     """Returns the sim's msisdn."""
     ser.write('AT+CPBS=SM\r')

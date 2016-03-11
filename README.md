@@ -229,3 +229,33 @@ Request Parameters:
 
 Response Parameters:
 - success: Boolean. Tells whether the USSD command was successful.
+
+### Waiting for an SMS Message
+
+Example Request
+```sh
+$ curl -XGET 'http://localhost:3000/modems/$MODEM_NUMBER/wait_for_sms?origin=Globe&timeout=0'
+```
+
+Example Response:
+```json
+{
+  "message": {
+    "status": "REC UNREAD",
+    "index": 1,
+    "time": "14:58:19",
+    "date": "03/11/16",
+    "message": "Hello World",
+    "origin": "GLOBE"
+  },
+  "error": null
+}
+```
+
+Request Parameters:
+- origin: The name or number where the message will be coming from.
+- timeout: Number. Duration to wait until we consider the request failed.
+
+Response Parameters:
+- message: Object. Contains the details of the message.
+- error: String. Error that occured.
