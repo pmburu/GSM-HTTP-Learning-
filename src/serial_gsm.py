@@ -13,7 +13,11 @@ CALL_RES_STATES = [
 
 def _parse_cusd(s):
     """Parses a cusd response."""
-    return s.strip().rstrip().replace('+CUSD: 2,"', '').replace('",15', '')
+    return s.strip()\
+            .rstrip()\
+            .replace('+CUSD: 1,"', '')\
+            .replace('+CUSD: 2,"', '')\
+            .replace('",15', '')
 
 
 def _parse_cpbr_row(s):
@@ -253,16 +257,24 @@ def wait_and_answer_call(ser, duration=0, timeout=30):
 
 def ussd_send(ser, command, timeout=0):
     """Makes an USSD request. Returns the response of the
-    command."""
+    command.
+
+    For partial USSD commands, the function only returns
+    once the server has terminated the USSD session. This
+    does not follow the provided timeout.
+    """
     # We clear any existing USSD messages or uncleared
     # buffer.
-    res = wait_for_strs(ser, ['ERROR', 'OK', '+CUSD: 2'], timeout=1)
+    res = wait_for_strs(ser, ['ERROR', 'OK', '+CUSD: 2', '+CUSD: 1'], timeout=1)
     ser.write('AT+CUSD=1,"%s",15\r' % command)
     res = wait_for_strs(ser, ['OK', 'ERROR'], timeout=timeout)
     # If an error occurs, 
     if 'ERROR' in res:
         return {'success': False, 'message': None, 'error': res}
-    res = wait_for_strs(ser, ['ERROR', '+CUSD: 2'], timeout=timeout)
+    res = wait_for_strs(ser, ['ERROR', '+CUSD: 2', '+CUSD: 1'], timeout=timeout)
+    # Let's wait for the server to terminate the session.
+    if '+CUSD: 1' in res:
+        wait_for_strs(ser, ['ERROR'], timeout=0)
     return {'success': True, 'message': _parse_cusd(res), 'error': None}
 
 
@@ -271,4 +283,4 @@ if __name__ == '__main__':
     import time
     port = '/dev/ttyACM0'
     ser = serial.Serial(port, 115200, timeout=0.2)
-    ussd_send(ser, '*143*2*1*1#')
+    print ussd_send(ser, '*143#')
