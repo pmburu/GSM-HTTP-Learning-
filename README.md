@@ -175,6 +175,7 @@ Request Parameters:
 Response Parameters:
 - success: Boolean. Tells whether the USSD command was successful.
 - message: String. The final message the modem receives.
+- error: String. Error that occured.
 
 ### Reading the Modem Inbox
 
