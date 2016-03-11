@@ -286,6 +286,9 @@ def ussd_send(ser, command, timeout=0):
     if 'ERROR' in res:
         return {'success': False, 'message': None, 'error': res}
     res = wait_for_strs(ser, ['ERROR', '+CUSD: 2', '+CUSD: 1'], timeout=timeout)
+    # If an error occurs, 
+    if 'ERROR' in res:
+        return {'success': False, 'message': None, 'error': res}
     # Let's wait for the server to terminate the session.
     if '+CUSD: 1' in res:
         wait_for_strs(ser, ['ERROR'], timeout=0)
