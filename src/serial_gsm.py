@@ -262,7 +262,7 @@ def ussd_send(ser, command, timeout=0):
     # If an error occurs, 
     if 'ERROR' in res:
         return {'success': False, 'message': None, 'error': res}
-    res = wait_for_strs(ser, ['+CUSD: 2'], timeout=timeout)
+    res = wait_for_strs(ser, ['ERROR', '+CUSD: 2'], timeout=timeout)
     return {'success': True, 'message': _parse_cusd(res), 'error': None}
 
 
