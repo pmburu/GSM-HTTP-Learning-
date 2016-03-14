@@ -235,14 +235,14 @@ def call(ser, number, duration=0, timeout=30):
     # If the call has not been successfully connected, the
     # function exits.
     if 'OK' not in res:
-        return {'connected': False, 'duration': 0}
+        return {'connected': False, 'duration': 0, 'res': res}
     started = int(time.time())
     # Let's wait until the call is bound to end or the call
     # has been ended from the other side.
     res = wait_for_strs(ser, CALL_RES_STATES, timeout=duration)
     ser.write('AT+CHUP\r')
     res = wait_for_strs(ser, CALL_RES_STATES, timeout=duration)
-    return {'connected': True, 'duration': int(time.time()) - started}
+    return {'connected': True, 'duration': int(time.time()) - started, 'res': res}
 
 
 def wait_and_answer_call(ser, duration=0, timeout=30):
