@@ -297,9 +297,23 @@ def ussd_send(ser, command, timeout=0):
     return {'success': True, 'message': _parse_cusd(res), 'error': None}
 
 
+def check_modem(ser, timeout=0.5):
+    """Checks the modem if it responds to a test command."""
+    ser.write('AT\r')
+    res = wait_for_strs(ser, ['OK'], timeout=timeout)
+    if 'ERROR' in res:
+        return False
+    return True
+
+
 if __name__ == '__main__':
     import serial
     import time
     port = '/dev/ttyACM0'
-    ser = serial.Serial(port, 115200, timeout=0.2)
-    print ussd_send(ser, '*143#')
+    ports = ['/dev/ttyACM%s' % n for n in xrange(16)]
+    for port in ports:
+        print 'reading...', port
+        ser = serial.Serial(port, 115200, timeout=0.2)
+        #res = call(ser, '09175595283')
+        res = check_modem(ser)
+        print 'port: %s -- %s' % (port, res)

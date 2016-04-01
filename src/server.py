@@ -25,6 +25,8 @@ for port in ports.keys():
     except:
         unused_ports.append(port)
         continue
+    if not check_modem(ser):
+        continue
     number = serial_gsm.sim_msisdn(_ser)
     if number:
         serials[number] = _ser
