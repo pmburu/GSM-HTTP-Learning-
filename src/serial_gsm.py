@@ -306,6 +306,18 @@ def check_modem(ser, timeout=0.5):
     return True
 
 
+def check_signal(ser, timeout=0):
+    """Checks the modem current signal quality."""
+    ser.write('AT+CSQ\r')
+    res = wait_for_strs(ser, ['ERROR', 'OK'], timeout=timeout)
+    if 'ERROR' in res:
+        return {'error': res, 'rssi': None, 'ber': None}
+    # Parse the signal quality
+    m = res.split('+CSQ:')[1].replace('OK', '').replace('\n', '').strip()
+    rssi, ber = m.split(',')
+    return {'error': None, 'rssi': rssi, 'ber': ber}
+
+
 if __name__ == '__main__':
     import serial
     import time
@@ -316,4 +328,7 @@ if __name__ == '__main__':
         ser = serial.Serial(port, 115200, timeout=0.2)
         #res = call(ser, '09175595283')
         res = check_modem(ser)
+        if not check_modem(ser):
+            continue
+        res = check_signal(ser)
         print 'port: %s -- %s' % (port, res)
