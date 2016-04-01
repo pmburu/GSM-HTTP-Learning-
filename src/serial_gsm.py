@@ -67,7 +67,9 @@ def _merge_multipart_messages(messages):
             mes = m['message'].strip(MULTIPART_HEADER)
             # We retrieve the message id and the actual
             # message.
-            id, mes = mes.split('\x00')
+            id, mes = mes.split('\x00', 1)
+            # Cleanup message.
+            mes = mes.replace('\x00', '')
             id = id[0][:2]
             m['message'] = mes
             if not multiparts.get(id, None):
