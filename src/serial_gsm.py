@@ -1,4 +1,10 @@
 import time
+import socket
+import fcntl
+import struct
+
+
+true_socket = socket.socket
 
 
 MULTIPART_HEADER = '\x05\x00\x0c'
@@ -9,6 +15,23 @@ CALL_RES_STATES = [
     'NO DIALTONE',  # No dialtone...
     'CME ERROR:',  # Call timeout.
 ]
+
+
+def make_bound_socket(ip):
+    def bound_socket(*a, **k):
+        sock = true_socket(*a, **k)
+        sock.bind((ip, 0))
+        return sock
+    return bound_socket
+
+
+def get_ip_address(ifname):
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    return socket.inet_ntoa(fcntl.ioctl(
+        s.fileno(),
+        0x8915,
+        struct.pack('256s', ifname[:15])
+    )[20:24])
 
 
 def _parse_cusd(s):
