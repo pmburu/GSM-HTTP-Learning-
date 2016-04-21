@@ -147,7 +147,7 @@ def api_data_request(number):
     # TODO: Flush DNS
     url = request.form['url']
     timeout = request.form.get('timeout', 0)
-    with net_utils.use_interface('ppp0'):
+    with net_utils.use_interface('wlan0'):
         try:
             r = requests.get(url, timeout=timeout)
         except requests.ConnectionError:
