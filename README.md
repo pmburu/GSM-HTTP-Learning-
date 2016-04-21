@@ -259,3 +259,33 @@ Request Parameters:
 Response Parameters:
 - message: Object. Contains the details of the message.
 - error: String. Error that occured.
+
+### Data Request
+
+This API provides a way to make a data-related request.
+
+Example Request
+```sh
+$ curl -XPOST 'http://localhost:3000/modems/$MODEM_NUMBER/data -F 'url=http://m.facebook.com'
+```
+
+Example Response:
+```json
+{
+  "error": null,
+  "url": "http://m.facebook.com",
+  "response_body_size": 1024,
+  "response_header_size": 307,
+  "response_status_code": 200
+}
+```
+
+Request Parameters:
+- url: A website url to make request to.
+- timeout: Number. Duration to wait until we consider the request failed.
+
+Response Parameters:
+- error: String. Error that occured.
+- url: String. The website url requested.
+- response_body_size: Number. The size of the response body.
+- response_status_code: Number. The HTTP status code we got.

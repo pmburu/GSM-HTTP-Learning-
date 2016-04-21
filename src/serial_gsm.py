@@ -344,14 +344,13 @@ def check_signal(ser, timeout=0):
 if __name__ == '__main__':
     import serial
     import time
-    port = '/dev/ttyACM0'
-    ports = ['/dev/ttyACM%s' % n for n in xrange(16)]
-    for port in ports:
-        print 'reading...', port
-        ser = serial.Serial(port, 115200, timeout=0.2)
-        #res = call(ser, '09175595283')
-        res = check_modem(ser)
-        if not check_modem(ser):
-            continue
-        res = check_signal(ser)
-        print 'port: %s -- %s' % (port, res)
+    port = '/dev/ttyACM1'
+    #ports = ['/dev/ttyACM%s' % n for n in xrange(16)]
+    #for port in ports:
+    print 'reading...', port
+    ser = serial.Serial(port, 115200, timeout=0.2)
+    #res = call(ser, '09175595283')
+    res = str(sim_msisdn(ser))
+    print 'port: %s -- %s' % (port, res)
+    balance = ussd_send(ser, '*143*2*1*1#', timeout=10)
+    print 'balance: %s' % balance

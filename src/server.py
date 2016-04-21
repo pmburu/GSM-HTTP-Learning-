@@ -2,6 +2,7 @@ from functools import partial
 import serial_gsm
 import serial
 import initialize
+import net_utils
 
 
 SERIAL_BAUDRATE = 115200
@@ -18,14 +19,23 @@ serials = {}
 unused_ports = []
 
 
+def check_modem(ser):
+    try:
+        ser.write('AT')
+        return True
+    except:
+        return False
+
+
 # Parse numbers.
 for port in ports.keys():
+    print 'initializing port %s' % port
     try:
         _ser = Serial(port)
     except:
         unused_ports.append(port)
         continue
-    if not check_modem(ser):
+    if not check_modem(_ser):
         continue
     number = serial_gsm.sim_msisdn(_ser)
     if number:
@@ -128,6 +138,34 @@ def api_send_ussd(number):
     timeout = int(request.form.get('timeout', 0))
     res = serial_gsm.ussd_send(ser, command, timeout=timeout)
     return jsonify(res)
+
+
+@app.route('/modems/<number>/data', methods=['POST'])
+def api_data_request(number):
+    # TODO: Update wvdial config.
+    # TODO: Connect using wvdial.
+    # TODO: Flush DNS
+    url = request.form['url']
+    timeout = request.form.get('timeout', 0)
+    with net_utils.use_interface('ppp0'):
+        try:
+            r = requests.get(url, timeout=timeout)
+        except requests.ConnectionError:
+            return jsonify({
+                'error': 'Failed to connect.',
+                'url': url,
+                'response_body_size': None,
+                'response_header_size': None,
+                'response_status_code': None,
+            })
+
+    return jsonify({
+        'error': None,
+        'url': url,
+        'response_body_size': len(r.text),
+        'response_header_size': None,
+        'response_status_code': r.status_code,
+    })
 
 
 if __name__ == '__main__':

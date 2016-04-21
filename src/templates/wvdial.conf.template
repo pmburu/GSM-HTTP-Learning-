@@ -1,13 +1,16 @@
 [Dialer Defaults]
-Init1 = ATZ
-Init2 = ATQ0 V1 E1 S0=0 &C1 &D2 +FCLASS=0
-Init3 = AT+CGDCONT=1,"IP","http.globe.com.ph"
-Baud = 115200
-New PPPD = yes
-Modem = /dev/ttyACM0
-ISDN = 0
-Phone = *99#
 Username = globe
 Password = globe
-Stupid Mode = yes
+APN = globe
+Phone = *99***1#
+Init1 = AT+CGDCONT=1,"IP","internet.globe.com.ph","",0,0
+Idle Seconds = 3000
+Baud = 115200
+Stupid Mode = 1
+Compuserve = 0
+Modem = /dev/ttyACM0
+Auto DNS = 1
 Dial Command = ATD
+Ask Password = 0
+ISDN = 0
+FlowControl = NOFLOW
