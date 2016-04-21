@@ -275,7 +275,6 @@ Example Response:
   "error": null,
   "url": "http://m.facebook.com",
   "response_body_size": 1024,
-  "response_header_size": 307,
   "response_status_code": 200
 }
 ```
