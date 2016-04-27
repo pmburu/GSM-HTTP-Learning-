@@ -65,12 +65,6 @@ def port_or_404(number):
     return port
 
 
-@app.route('/modems/<number>/prep_bal')
-def api_number_bal(number):
-    ser = ser_or_404(number)
-    return jsonify({'balance': 0})
-
-
 @app.route('/system/available_numbers')
 def api_available_numbers():
     return jsonify({'numbers': serials.keys()})
