@@ -83,6 +83,9 @@ def api_call(number):
     duration = int(request.form.get('duration', 0))
 
     res = serial_gsm.call(ser, dest_number, duration=duration)
+    # We were unable to connect the call.
+    if res.get('connected', False):
+        return jsonify(res), 400
     return jsonify(res)
 
 
@@ -91,6 +94,9 @@ def api_wait_for_call(number):
     ser = ser_or_404(number)
     duration = int(request.form.get('duration', 0))
     res = serial_gsm.wait_and_answer_call(ser, duration=duration)
+    # We were unable to connect the call.
+    if res.get('connected', False):
+        return jsonify(res), 400
     return jsonify(res)
 
 
@@ -100,6 +106,9 @@ def api_send_sms(number):
     recipient = request.form['number']
     message = request.form['message']
     res = serial_gsm.send_sms(ser, recipient, message)
+    # We were unable to send the sms
+    if res.get('success', False):
+        return jsonify(res), 500
     return jsonify(res)
 
 
@@ -122,6 +131,9 @@ def api_wait_for_sms(number):
     origin = request.args['origin']
     timeout = int(request.args.get('timeout', 0))
     res = serial_gsm.wait_for_sms(ser, origin, timeout)
+    # SMS waited probably never came. Try again?
+    if res.get('error', 'an error'):
+        return jsonify(res), 400
     return jsonify(res)
 
 
@@ -131,6 +143,9 @@ def api_send_ussd(number):
     command = request.form['command']
     timeout = int(request.form.get('timeout', 0))
     res = serial_gsm.ussd_send(ser, command, timeout=timeout)
+    # USSD requests are more prone to system errors.
+    if res.get('success', False):
+        return jsonify(res), 500
     return jsonify(res)
 
 

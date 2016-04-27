@@ -15,6 +15,7 @@ CALL_RES_STATES = [
     'NO DIALTONE',  # No dialtone...
     'CME ERROR:',  # Call timeout.
 ]
+GENERIC_SYSTEM_ERROR = 'Modem might be out of coverage. Check modem and try again.'
 
 
 def make_bound_socket(ip):
@@ -175,8 +176,8 @@ def send_sms(ser, recipient, message):
     ser.write(chr(26))
     res = wait_for_strs(ser, ['OK', 'ERROR'])
     if 'ERROR' in res:
-        return {'success': False}
-    return {'success': True}
+        return {'success': False, 'res': res, 'error': GENERIC_SYSTEM_ERROR}
+    return {'success': True, 'res': res, 'error': None}
 
 
 def delete_inbox_message(ser, index):
@@ -219,7 +220,7 @@ def wait_for_sms(ser, origin, timeout=0):
         if timeout:
             elapsed = int(time.time()) - started
             if elapsed > timeout:
-                return {'message': None, 'error': 'Wait for SMS timeout'}
+                return {'message': None, 'error': 'Wait for SMS timed-out.'}
 
 
 def sim_msisdn(ser):
