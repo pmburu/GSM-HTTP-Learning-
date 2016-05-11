@@ -173,7 +173,7 @@ def wait_for_strs(ser, strs, timeout=0):
         if timeout:
             elapsed = int(time.time()) - started
             if elapsed >= timeout:
-                return 'CME ERROR: 0'
+                return 'CME ERROR: TIMEOUT'
 
 
 def send_sms(ser, recipient, message):
