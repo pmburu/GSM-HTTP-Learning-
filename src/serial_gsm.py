@@ -238,10 +238,12 @@ def sim_msisdn(ser):
     ser.write('AT+CPBS=SM\r')
     res = wait_for_strs(ser, ['OK', 'ERROR'], timeout=5)
     if 'ERROR' in res:
+        print 'error: %s' % res
         return False
     ser.write('AT+CPBR=1,100\r')
     res = wait_for_strs(ser, ['OK', 'ERROR'], timeout=5)
     if 'ERROR' in res:
+        print 'error: %s' % res
         return False
     numbers = _parse_cpbr(res)
     for num in numbers:

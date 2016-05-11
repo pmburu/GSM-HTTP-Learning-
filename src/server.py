@@ -27,11 +27,14 @@ for port in ports.keys():
     try:
         _ser = Serial(port)
     except:
+        print 'unable to load port'
         unused_ports.append(port)
         continue
-    if not check_modem(_ser):
+    if not serial_gsm.check_modem(_ser):
+        print 'failed to check modem'
         continue
     number = serial_gsm.sim_msisdn(_ser)
+    print 'got number: %s' % number
     if number:
         serials[number] = _ser
         ports[port] = number
