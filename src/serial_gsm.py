@@ -67,7 +67,17 @@ def _parse_cpbr(s):
 
 def _parse_cmgl_header(s):
     """Parses a cmgl row data into a dictionary."""
-    index, status, origin, _, date, time = s.strip('+CMGL: ').split(',')
+    try:
+        index, status, origin, _, date, time = s.strip('+CMGL: ').split(',')
+    except ValueError:
+        return {
+            'index': None,
+            'status': None,
+            'origin': None,
+            'date': None,
+            'time': None,
+            'message': s,
+        }
     y, m, d = date.split('/')
     date = '/'.join([m,d,y])
     return {
