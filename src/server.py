@@ -3,6 +3,8 @@ import serial_gsm
 import serial
 import initialize
 import net_utils
+import requests
+import time
 
 
 SERIAL_BAUDRATE = 115200
@@ -17,14 +19,6 @@ ports = {m: None for m in initialize.get_modems()}
 numbers = {}
 serials = {}
 unused_ports = []
-
-
-def check_modem(ser):
-    try:
-        ser.write('AT')
-        return True
-    except:
-        return False
 
 
 # Parse numbers.
@@ -151,22 +145,47 @@ def api_send_ussd(number):
 
 @app.route('/modems/<number>/data', methods=['POST'])
 def api_data_request(number):
-    # TODO: Update wvdial config.
-    # TODO: Connect using wvdial.
-    # TODO: Flush DNS
     url = request.form['url']
-    timeout = request.form.get('timeout', 0)
-    with net_utils.use_interface('wlan0'):
+    timeout = int(request.form.get('timeout', 0))
+    port = port_or_404(number)
+    # TODO: Turn the ff into a required argument in the
+    # future.
+    apn = request.form.get('apn', 'http.globe.com.ph')
+    dial = request.form.get('dial', '*99#')
+    wait_connect = int(request.form.get('wait_connect', 5))
+
+    net_utils.flush_dns()
+    proc = net_utils.connect_wvdial(port, apn, wait_connect=wait_connect)
+
+    # TODO: Implement a dynamic interface system so we can handle multiple
+    # connected interfaces in a single server.
+    res, err = net_utils.check_if_connected('ppp0')
+    if not res:
+        proc.terminate()
+        return jsonify({
+            'error': 'Unable to establish a connection to the network: %s. Try increasing the `wait_connect` parameter.' % err,
+            'url': url,
+            'response_body_size': None,
+            'response_header_size': None,
+            'response_status_code': None,
+        }), 500
+
+
+    with net_utils.use_interface('ppp0'):
         try:
             r = requests.get(url, timeout=timeout)
         except requests.ConnectionError:
+            proc.terminate()
             return jsonify({
-                'error': 'Failed to connect.',
+                'error': 'Request timed-out. Unable to connect to the url specified. Try increasing the `timeout` parameter.',
                 'url': url,
                 'response_body_size': None,
                 'response_header_size': None,
                 'response_status_code': None,
             })
+
+    # Let's close the interface, finally.
+    proc.terminate()
 
     return jsonify({
         'error': None,

@@ -345,7 +345,7 @@ def check_signal(ser, timeout=0):
 if __name__ == '__main__':
     import serial
     import time
-    port = '/dev/ttyACM1'
+    port = '/dev/ttyACM0'
     #ports = ['/dev/ttyACM%s' % n for n in xrange(16)]
     #for port in ports:
     print 'reading...', port
