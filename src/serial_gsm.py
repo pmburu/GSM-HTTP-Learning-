@@ -357,13 +357,12 @@ def check_signal(ser, timeout=0):
 if __name__ == '__main__':
     import serial
     import time
-    port = '/dev/ttyACM0'
-    #ports = ['/dev/ttyACM%s' % n for n in xrange(16)]
-    #for port in ports:
+    number = "9062806806"
+    port = '/dev/ttyACM2'
+    #ports = ['/dev/ttyACM%s' % n for n in xrange(64)]
     print 'reading...', port
     ser = serial.Serial(port, 115200, timeout=0.2)
-    #res = call(ser, '09175595283')
     res = str(sim_msisdn(ser))
+    print "woot: ", number == res
     print 'port: %s -- %s' % (port, res)
-    balance = ussd_send(ser, '*143*2*1*1#', timeout=10)
-    print 'balance: %s' % balance
+    print 'balance: %s' % ussd_send(ser, '*143*2*1*1#', timeout=10)

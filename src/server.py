@@ -157,12 +157,18 @@ def api_data_request(number):
     dial = request.form.get('dial', '*99#')
     wait_connect = int(request.form.get('wait_connect', 5))
 
-    net_utils.flush_dns()
+    # Optionally trigger a dns refresh in each request
+    refresh_dns = request.form.get('refresh_dns', 'false').lower() == 'true'
+
+    if refresh_dns:
+        net_utils.flush_dns()
+
     proc = net_utils.connect_wvdial(port, apn, wait_connect=wait_connect)
 
     # TODO: Implement a dynamic interface system so we can handle multiple
     # connected interfaces in a single server.
     res, err = net_utils.check_if_connected('ppp0')
+
     if not res:
         proc.terminate()
         return jsonify({

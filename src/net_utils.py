@@ -24,16 +24,19 @@ def make_bound_socket(ip):
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    return socket.inet_ntoa(fcntl.ioctl(
+    res = socket.inet_ntoa(fcntl.ioctl(
         s.fileno(),
         0x8915,
         struct.pack('256s', ifname[:15])
     )[20:24])
+    print res
+    return res
 
 
 @contextmanager
 def use_interface(interface):
     interface_ip = get_ip_address(interface)
+    set_default_gateway(interface_ip)
     mock_socket = make_bound_socket(interface_ip)
     with patch('socket.socket', mock_socket):
         yield
@@ -63,6 +66,7 @@ def connect_wvdial(port, apn, dial='*99#', wait_connect=5):
     }
     base_cmd = ['wvdial']
     cmd = base_cmd + _join_overrides(overrides)
+    print base_cmd
     p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     time.sleep(wait_connect)
     return p
@@ -70,21 +74,32 @@ def connect_wvdial(port, apn, dial='*99#', wait_connect=5):
 
 def flush_dns():
     print 'flusing dns...'
+    cmd = ['/etc/init.d/dnsmasq', 'restart']
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    print p.communicate()
     print 'dns flushed'
-    pass
+
+
+def set_default_gateway(ip):
+    print 'setting default gateway to network interface.'
+    cmd = ['/etc/init.d/dnsmasq', 'restart']
+    cmd = ['route', 'add', 'default', 'gw', ip]
+    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    print p.communicate()
+    print 'done'
 
 
 if __name__ == '__main__':
-    port = '/dev/ttyACM0'
-    p = connect_wvdial(port, 'http.globe.com.ph')
-    print "connected!"
+    #port = '/dev/ttyACM2'
+    #p = connect_wvdial(port, 'http.globe.com.ph')
+    #print "connected!"
     interface = 'ppp0'
-    url = 'http://m.facebook.com'
+    url = 'https://google.com.ph'
     print "browsing '%s'" % url
     with use_interface(interface):
-        r = requests.get(url, timeout=5)
+        r = requests.get(url, timeout=10)
         inspect = r.text
         print dir(inspect)
         print inspect
     print 'terminating connection'
-    p.terminate()
+    #p.terminate()
