@@ -125,6 +125,7 @@ def api_clear_inbox(number):
 
 @app.route('/modems/<number>/wait_for_sms')
 def api_wait_for_sms(number):
+    ser = ser_or_404(number)
     origin = request.args['origin']
     timeout = int(request.args.get('timeout', 0))
     res = serial_gsm.wait_for_sms(ser, origin, timeout)
