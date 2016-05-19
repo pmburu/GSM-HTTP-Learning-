@@ -3,6 +3,8 @@ import socket
 import fcntl
 import struct
 
+from serial_ussd import USSDSend, to_command_seq
+
 
 true_socket = socket.socket
 
@@ -315,22 +317,31 @@ def ussd_send(ser, command, timeout=0):
     once the server has terminated the USSD session. This
     does not follow the provided timeout.
     """
-    # We clear any existing USSD messages or uncleared
-    # buffer.
-    res = wait_for_strs(ser, ['ERROR', 'OK', '+CUSD: 2', '+CUSD: 1'], timeout=1)
-    ser.write('AT+CUSD=1,"%s",15\r' % command)
-    res = wait_for_strs(ser, ['OK', 'ERROR'], timeout=timeout)
-    # If an error occurs, 
-    if 'ERROR' in res:
-        return {'success': False, 'message': None, 'error': res}
-    res = wait_for_strs(ser, ['ERROR', '+CUSD: 2', '+CUSD: 1'], timeout=timeout)
-    # If an error occurs, 
-    if 'ERROR' in res:
-        return {'success': False, 'message': None, 'error': res}
-    # Let's wait for the server to terminate the session.
-    if '+CUSD: 1' in res:
-        wait_for_strs(ser, ['ERROR'], timeout=0)
-    return {'success': True, 'message': _parse_cusd(res), 'error': None}
+    if isinstance(command, str):
+        command = [command]
+    res = USSDSend(ser, command).run(timeout)
+    return {
+        'success': True,
+        'message': res,
+        'error': None,
+    }
+    ## XXX: OLD CODE
+    ## We clear any existing USSD messages or uncleared
+    ## buffer.
+    #res = wait_for_strs(ser, ['ERROR', 'OK', '+CUSD: 2', '+CUSD: 1'], timeout=1)
+    #ser.write('AT+CUSD=1,"%s",15\r' % command)
+    #res = wait_for_strs(ser, ['OK', 'ERROR'], timeout=timeout)
+    ## If an error occurs, 
+    #if 'ERROR' in res:
+    #    return {'success': False, 'message': None, 'error': res}
+    #res = wait_for_strs(ser, ['ERROR', '+CUSD: 2', '+CUSD: 1'], timeout=timeout)
+    ## If an error occurs, 
+    #if 'ERROR' in res:
+    #    return {'success': False, 'message': None, 'error': res}
+    ## Let's wait for the server to terminate the session.
+    #if '+CUSD: 1' in res:
+    #    wait_for_strs(ser, ['ERROR'], timeout=0)
+    #return {'success': True, 'message': _parse_cusd(res), 'error': None}
 
 
 def check_modem(ser, timeout=0.5):
@@ -355,14 +366,20 @@ def check_signal(ser, timeout=0):
 
 
 if __name__ == '__main__':
+    import sys
+    import logging
+    logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
+
     import serial
     import time
     number = "9062806806"
-    port = '/dev/ttyACM2'
+    #port = '/dev/ttyACM2'
+    port = '/dev/tty.usbmodem14111'
     #ports = ['/dev/ttyACM%s' % n for n in xrange(64)]
     print 'reading...', port
     ser = serial.Serial(port, 115200, timeout=0.2)
     res = str(sim_msisdn(ser))
     print "woot: ", number == res
     print 'port: %s -- %s' % (port, res)
-    print 'balance: %s' % ussd_send(ser, '*143*2*1*1#', timeout=10)
+    balance = ussd_send(ser, '*143*2*1*1#', timeout=0)
+    print 'balance: %s' % balance
