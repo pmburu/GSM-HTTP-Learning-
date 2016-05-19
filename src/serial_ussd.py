@@ -74,7 +74,7 @@ class USSDSend(Protocol):
         l = l.replace('+CUSD: 2,"', '')
         l = l.rstrip('",15')
         self._buffer.append(l)
-        self.set_result(self._buffer)
+        self.set_result(l)
 
     def on_ERROR(self, l):
         logger.error(l)
