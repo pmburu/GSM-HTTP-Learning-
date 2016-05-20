@@ -23,7 +23,7 @@ class USSDSend(Protocol):
 
     def __init__(self, ser, cmd):
         super(USSDSend, self).__init__(ser)
-        self.cmd = cmd
+        self.cmd = cmd.split()
         self.cmd.reverse()
         self._buffer = []
 
