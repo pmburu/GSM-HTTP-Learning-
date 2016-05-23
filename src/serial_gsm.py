@@ -317,6 +317,7 @@ def ussd_send(ser, command, timeout=0):
     once the server has terminated the USSD session. This
     does not follow the provided timeout.
     """
+    print('USSD::Command: %s' % command)
     err, res = USSDSend(ser, command).run(timeout)
     return {
         'success': True,
