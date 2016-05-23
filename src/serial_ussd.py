@@ -78,7 +78,7 @@ class USSDSend(Protocol):
 
     def on_ERROR(self, l):
         logger.error(l)
-        self.set_result(l)
+        self.set_error(l)
 
 
 def to_command_seq(s):

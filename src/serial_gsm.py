@@ -317,11 +317,11 @@ def ussd_send(ser, command, timeout=0):
     once the server has terminated the USSD session. This
     does not follow the provided timeout.
     """
-    res = USSDSend(ser, command).run(timeout)
+    err, res = USSDSend(ser, command).run(timeout)
     return {
         'success': True,
         'message': res,
-        'error': None,
+        'error': err,
     }
     ## XXX: OLD CODE
     ## We clear any existing USSD messages or uncleared

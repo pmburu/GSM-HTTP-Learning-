@@ -29,15 +29,24 @@ class Protocol(Event):
         super(Protocol, self).__init__()
         self.transport = ser
         self._result = None
+        self._error = None
         self._has_result = False
 
     def set_result(self, res):
         self._has_result = True
         self._result = res
 
+    def set_error(self, err):
+        self._has_result = True
+        self._error = err
+
     @property
     def result(self):
         return self._result
+
+    @property
+    def error(self):
+        return self._error
 
     def command(self):
         pass
@@ -86,13 +95,13 @@ class Protocol(Event):
             self.before()
 
             if self._has_result:
-                return self.result
+                return (self.error, self.result)
 
             duration = int(time.time()) - _started
             if timeout != 0:
                 if duration > timeout:
                     logger.debug('Request Timed-out')
-                    return self.result
+                    return ('Request Timed-out', None)
 
             self.fn()
 
