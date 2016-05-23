@@ -3,7 +3,7 @@ import socket
 import fcntl
 import struct
 
-from serial_ussd import USSDSend, to_command_seq
+from serial_ussd import USSDSend
 
 
 true_socket = socket.socket
@@ -317,7 +317,7 @@ def ussd_send(ser, command, timeout=0):
     once the server has terminated the USSD session. This
     does not follow the provided timeout.
     """
-    res = USSDSend(ser, to_command_seq(command)).run(timeout)
+    res = USSDSend(ser, command).run(timeout)
     return {
         'success': True,
         'message': res,
