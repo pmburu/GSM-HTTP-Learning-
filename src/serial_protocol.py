@@ -60,6 +60,7 @@ class Protocol(Event):
     def emit(self, l):
         """Overrides Event.emit() so we only need to
         provide the data we've been given."""
+        print('PROTOCOL::Emit: %s' % l)
         for be in self._events.keys():
             if l.startswith(be):
                 super(Protocol, self).emit(be, l)

@@ -319,6 +319,8 @@ def ussd_send(ser, command, timeout=0):
     """
     print('USSD::Command: %s' % command)
     err, res = USSDSend(ser, command).run(timeout)
+    print('USSD::Error: %s' % err)
+    print('USSD::Result: %s' % res)
     return {
         'success': True,
         'message': res,
