@@ -94,7 +94,7 @@ if __name__ == '__main__':
     logging.basicConfig(stream=sys.stderr, level=logging.DEBUG)
 
     from serial_utils import BAUDRATE
-    port = '/dev/tty.usbmodem14111'
+    port = '/dev/tty.usbmodem14211'
 
     ser = serial.Serial(port, BAUDRATE, timeout=1)
     ## Test single USSD bookmark

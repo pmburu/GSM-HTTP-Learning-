@@ -318,6 +318,8 @@ def ussd_send(ser, command, timeout=0):
     does not follow the provided timeout.
     """
     print('USSD::Command: %s' % command)
+    ser.write('AT+CUSD=2\r')
+    print('USSD::Clear: %s' % ser.readall())
     err, res = USSDSend(ser, command).run(timeout)
     print('USSD::Error: %s' % err)
     print('USSD::Result: %s' % res)
@@ -375,7 +377,7 @@ if __name__ == '__main__':
     import time
     number = "9062806806"
     #port = '/dev/ttyACM2'
-    port = '/dev/tty.usbmodem14111'
+    port = '/dev/tty.usbmodem14211'
     #ports = ['/dev/ttyACM%s' % n for n in xrange(64)]
     print 'reading...', port
     ser = serial.Serial(port, 115200, timeout=0.2)
@@ -384,3 +386,5 @@ if __name__ == '__main__':
     print 'port: %s -- %s' % (port, res)
     balance = ussd_send(ser, '*143*2*1*1#', timeout=0)
     print 'balance: %s' % balance
+    gosakto = ussd_send(ser, '*143*1*1*7#', timeout=0)
+    print 'gosakto: %s' % gosakto
