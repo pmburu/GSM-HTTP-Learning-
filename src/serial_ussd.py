@@ -41,6 +41,13 @@ class USSDSend(Protocol):
         cmd = self.cmd.pop()
         cmd = 'AT+CUSD=1,"%s",15\r' % cmd
         logger.debug(cmd)
+
+        # Escape first and try to reset.
+        self.transport.write(ESCAPE)
+        self.transport.readall()
+        self.transport.write('ATZ\r')
+        self.transport.readall()
+
         self.transport.write(cmd)
 
     def on_OK(self, l):
