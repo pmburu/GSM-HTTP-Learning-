@@ -17,6 +17,8 @@ NETWORK_FAST = 2.5
 
 # Terminate String
 TERMINATE = chr(26)
+# Escape String
+ESCAPE = chr(27)
 
 
 class USSDSend(Protocol):
@@ -52,7 +54,7 @@ class USSDSend(Protocol):
             cmd = self.cmd.pop()
         except IndexError as e:
             self.set_result(self._buffer[-1])
-            self.transport.write(TERMINATE)
+            self.transport.write(ESCAPE)
             print(self.transport.readall())
             return
         logger.debug('> %s' % cmd)
