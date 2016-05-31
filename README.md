@@ -288,3 +288,36 @@ Response Parameters:
 - url: String. The website url requested.
 - response_body_size: Number. The size of the response body.
 - response_status_code: Number. The HTTP status code we got.
+
+### FTP Request
+
+This API provides a way to make a data-related FTP request.
+
+Example Request
+```sh
+$ curl -XPOST 'http://localhost:3000/modems/$MODEM_NUMBER/ftp -F 'ftp_host=http://m.facebook.com' -F 'ftp_file=@myfile.txt'
+```
+
+Example Response:
+```json
+{
+  "error": null,
+  "success": true,
+}
+```
+
+Request Parameters:
+- ftp_host: Host where we'll upload our file
+- ftp_filename: Filename of the file when we upload.
+- ftp_file: A file (binary) to upload
+- ftp_path: Path to upload the file. Defaults to /tmp
+- ftp_port: (Optional) FTP port to use. Defaults to 21
+- ftp_username: (Optional) FTP Authentication username to use. Defaults to None
+- ftp_password: (Optional) FTP Authentication password to use. Defaults to None
+- timeout: Number. Duration to wait until we consider the request failed.
+
+Response Parameters:
+- error: String. Error that occured.
+- url: String. The website url requested.
+- response_body_size: Number. The size of the response body.
+- response_status_code: Number. The HTTP status code we got.

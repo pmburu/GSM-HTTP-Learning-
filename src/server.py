@@ -5,6 +5,7 @@ import initialize
 import net_utils
 import requests
 import time
+import ftp_utils
 
 
 SERIAL_BAUDRATE = 115200
@@ -203,6 +204,72 @@ def api_data_request(number):
         'response_body_size': len(r.text),
         'response_header_size': None,
         'response_status_code': r.status_code,
+    })
+
+
+@app.route('/modems/<number>/ftp', methods=['POST'])
+def api_data_request(number):
+    ftp_filename = request.form['ftp_filename']
+    ftp_host = request.form['ftp_host']
+    ftp_file = request.form['ftp_file']
+    ftp_path = request.form['ftp_path']
+    ftp_port = int(request.form.get('ftp_port', 21))
+    ftp_username = request.form.get('ftp_username', None)
+    ftp_password = request.form.get('ftp_password', None)
+
+    timeout = int(request.form.get('timeout', 0))
+    port = port_or_404(number)
+    # TODO: Turn the ff into a required argument in the
+    # future.
+    apn = request.form.get('apn', 'http.globe.com.ph')
+    dial = request.form.get('dial', '*99#')
+    wait_connect = int(request.form.get('wait_connect', 5))
+
+    # Optionally trigger a dns refresh in each request
+    refresh_dns = request.form.get('refresh_dns', 'false').lower() == 'true'
+
+    if refresh_dns:
+        net_utils.flush_dns()
+
+    proc = net_utils.connect_wvdial(port, apn, wait_connect=wait_connect)
+
+    # TODO: Implement a dynamic interface system so we can handle multiple
+    # connected interfaces in a single server.
+    res, err = net_utils.check_if_connected('ppp0')
+
+    if not res:
+        proc.terminate()
+        return jsonify({
+            'error': 'Unable to establish a connection to the network: %s. Try increasing the `wait_connect` parameter.' % err,
+            'success': False,
+        }), 500
+
+
+    with net_utils.use_interface('ppp0'):
+        try:
+            ftp_utils.upload(
+                ftp_file,
+                ftp_host,
+                ftp_filename=ftp_filename,
+                ftp_port=ftp_port,
+                ftp_username=ftp_username,
+                ftp_password=ftp_password,
+                upload_path=ftp_path,
+                timeout=timeout
+            )
+        except Exception:
+            proc.terminate()
+            return jsonify({
+                'error': 'Request timed-out. Failed to upload. Try increasing the `timeout` parameter.',
+                'success': False,
+            })
+
+    # Let's close the interface, finally.
+    proc.terminate()
+
+    return jsonify({
+        'error': None,
+        'success': True,
     })
 
 
