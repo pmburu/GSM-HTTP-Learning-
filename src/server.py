@@ -208,7 +208,7 @@ def api_data_request(number):
 
 
 @app.route('/modems/<number>/ftp', methods=['POST'])
-def api_data_request(number):
+def api_ftp_request(number):
     ftp_filename = request.form['ftp_filename']
     ftp_host = request.form['ftp_host']
     ftp_file = request.form['ftp_file']
