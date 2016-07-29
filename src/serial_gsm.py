@@ -184,7 +184,7 @@ def send_sms(ser, recipient, message):
     res = wait_for_strs(ser, ['OK'])
     ser.write('AT+CMGS="%s"\r' % recipient)
     time.sleep(0.5)
-    ser.write('%s\r' % message)
+    ser.write('%s' % message)
     ser.write(chr(26))
     res = wait_for_strs(ser, ['OK', 'ERROR'])
     if 'ERROR' in res:
